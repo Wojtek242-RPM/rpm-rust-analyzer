@@ -1,0 +1,53 @@
+diff --git a/xtask/src/install.rs b/xtask/src/install.rs
+index 78a8af797..8b819fb1e 100644
+--- a/xtask/src/install.rs
++++ b/xtask/src/install.rs
+@@ -54,6 +54,7 @@ impl std::str::FromStr for ClientOpt {
+ 
+ pub struct ServerOpt {
+     pub malloc: Malloc,
++    pub server_root: Option<String>
+ }
+ 
+ pub enum Malloc {
+@@ -170,7 +171,10 @@ fn install_server(opts: ServerOpt) -> Result<()> {
+         Malloc::Mimalloc => &["--features", "mimalloc"],
+     };
+ 
+-    let cmd = cmd!("cargo install --path crates/rust-analyzer --locked --force {features...}");
++    let cmd = match opts.server_root {
++        Some(root) => cmd!("cargo install --root {root} --path crates/rust-analyzer --locked --force {features...}"),
++        None => cmd!("cargo install --path crates/rust-analyzer --locked --force {features...}"),
++    };
+     let res = cmd.run();
+ 
+     if res.is_err() && old_rust {
+diff --git a/xtask/src/main.rs b/xtask/src/main.rs
+index 536a67047..9dc7a8fd1 100644
+--- a/xtask/src/main.rs
++++ b/xtask/src/main.rs
+@@ -49,6 +49,7 @@ FLAGS:
+         --client[=CLIENT] Install only VS Code plugin.
+                           CLIENT is one of 'code', 'code-insiders', 'codium', or 'code-oss'
+         --server          Install only the language server
++        --srv-root[=ROOT] Directory to install the server into
+         --mimalloc        Use mimalloc for server
+     -h, --help            Prints help information
+         "
+@@ -67,6 +68,7 @@ FLAGS:
+ 
+             let malloc =
+                 if args.contains("--mimalloc") { Malloc::Mimalloc } else { Malloc::System };
++            let server_root = args.opt_value_from_str("--srv-root")?;
+ 
+             let client_opt = args.opt_value_from_str("--client")?;
+ 
+@@ -74,7 +76,7 @@ FLAGS:
+ 
+             InstallCmd {
+                 client: if server { None } else { Some(client_opt.unwrap_or_default()) },
+-                server: if client_code { None } else { Some(ServerOpt { malloc }) },
++                server: if client_code { None } else { Some(ServerOpt { malloc, server_root }) },
+             }
+             .run()
+         }
