@@ -7,7 +7,7 @@
 Summary:       Implementation of the Language Server Protocol for the Rust programming language
 Name:          rust-analyzer
 Epoch:         1
-Version:       0
+Version:       0.0.0
 Release:       0.1.%{pkg_release_tag}%{?dist}
 License:       Apache-2.0 and MIT
 URL:           https://rust-analyzer.github.io/
