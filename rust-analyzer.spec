@@ -33,6 +33,7 @@ can't be considered stable.
 %autosetup -n %{name}-%{git_release_tag} -p1
 
 %build
+%set_build_flags
 cargo xtask dist
 
 %install
