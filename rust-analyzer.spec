@@ -8,14 +8,14 @@ Summary:       Implementation of the Language Server Protocol for the Rust progr
 Name:          rust-analyzer
 Epoch:         1
 Version:       0.0.0
-Release:       0.1.%{pkg_release_tag}%{?dist}
-License:       Apache-2.0 and MIT
+Release:       0.2.%{pkg_release_tag}%{?dist}
+License:       ASL 2.0 and MIT
 URL:           https://rust-analyzer.github.io/
 Source0:       https://github.com/rust-analyzer/rust-analyzer/archive/%{git_release_tag}.tar.gz#/%{name}-%{git_release_tag}.tar.gz
-Patch1:        cargo-xtask-install.patch
 
-BuildRequires: cargo
-BuildRequires: rust
+ExclusiveArch:  %{rust_arches}
+
+BuildRequires: rust-packaging
 
 Provides:      %{name}(bin) = %{epoch}:%{version}-%{release}
 
@@ -27,24 +27,39 @@ for many code editors, including VS Code, Emacs and Vim.
 Note that the project is in alpha status: it is already useful in practice, but
 can't be considered stable.
 
-%global debug_package %{nil}
-
 %prep
 %autosetup -n %{name}-%{git_release_tag} -p1
+# use bits of rust-packaging magic without local registry definition
+mkdir -p .cargo
+cat > .cargo/config << EOF
+[build]
+rustc = "%{__rustc}"
+rustdoc = "%{__rustdoc}"
+rustflags = %{__global_rustflags_toml}
+
+[install]
+root = "%{buildroot}%{_prefix}"
+
+[term]
+verbose = true
+EOF
 
 %build
-%set_build_flags
-cargo xtask dist
+%{__cargo} build %{__cargo_common_opts} --release --manifest-path ./crates/rust-analyzer/Cargo.toml --bin rust-analyzer
 
 %install
-cargo xtask install --server --srv-root %{buildroot}%{_prefix}
-
-rm %{buildroot}%{_prefix}/.crates.toml
-rm %{buildroot}%{_prefix}/.crates2.json
+%{__cargo} install %{__cargo_common_opts} --locked --no-track --path crates/%{name}
 
 %files
+%license LICENSE-APACHE LICENSE-MIT
+%doc PRIVACY.md README.md docs/user/*
 %{_bindir}/%{name}
 
 %changelog
+* Sun Nov 22 2020 Wojciech Kozlowski <wk@wojciechkozlowski.eu>
+- Use rpmbuild macros for cargo
+- Align with typical Fedora packaging
+- Remove cargo-xtask-install.patch
+
 * Sat Nov 21 2020 Wojciech Kozlowski <wk@wojciechkozlowski.eu>
 - Initial spec file for alpha GitHub releases
