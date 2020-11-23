@@ -11,7 +11,10 @@ Version:       0.0.0
 Release:       0.3.%{pkg_release_tag}%{?dist}
 License:       ASL 2.0 and MIT
 URL:           https://rust-analyzer.github.io/
-Source0:       https://github.com/rust-analyzer/rust-analyzer/archive/%{git_release_tag}.tar.gz#/%{name}-%{git_release_tag}.tar.gz
+Source0:       https://github.com/rust-analyzer/rust-analyzer/archive/%{git_release_tag}.tar.gz
+# For some reason rpkg packs the current directory as the source tarball if there is nothing else
+# other than Source0.
+Source1:       check-and-update.sh
 
 ExclusiveArch:  %{rust_arches}
 
