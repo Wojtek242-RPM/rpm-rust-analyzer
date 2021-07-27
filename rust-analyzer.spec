@@ -1,6 +1,6 @@
 %global _hardened_build 1
 
-%define git_release_tag 2021-07-19
+%define git_release_tag 2021-07-26
 %define pkg_release_tag %(echo %{git_release_tag} | sed -r "s/-//g")
 
 # This file is encoded in UTF-8.  -*- coding: utf-8 -*-
@@ -8,7 +8,7 @@ Summary:       Implementation of the Language Server Protocol for the Rust progr
 Name:          rust-analyzer
 Epoch:         1
 Version:       0.0.0
-Release:       0.38.%{pkg_release_tag}%{?dist}
+Release:       0.39.%{pkg_release_tag}%{?dist}
 License:       ASL 2.0 and MIT
 URL:           https://rust-analyzer.github.io/
 Source0:       https://github.com/rust-analyzer/rust-analyzer/archive/%{git_release_tag}.tar.gz
