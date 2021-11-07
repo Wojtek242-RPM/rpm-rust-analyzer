@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 SPEC_GIT_RELEASE=`grep "%define git_release_tag" rust-analyzer.spec | cut -d " " -f 3`
-REMOTE_GIT_RELEASE=`git ls-remote --tags git://github.com/rust-analyzer/rust-analyzer.git | grep "refs/tags/20" | tail -n 1 | cut -d "/" -f 3`
+REMOTE_GIT_RELEASE=`git ls-remote --tags https://github.com/rust-analyzer/rust-analyzer.git | grep "refs/tags/20" | tail -n 1 | cut -d "/" -f 3`
 
 if [ "${SPEC_GIT_RELEASE}" = "${REMOTE_GIT_RELEASE}" ]
 then

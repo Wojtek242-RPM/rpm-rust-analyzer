@@ -1,6 +1,6 @@
 %global _hardened_build 1
 
-%define git_release_tag 
+%define git_release_tag 2021-11-01
 %define pkg_release_tag %(echo %{git_release_tag} | sed -r "s/-//g")
 
 # This file is encoded in UTF-8.  -*- coding: utf-8 -*-
